@@ -1,0 +1,55 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: vantage-postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - vantage-network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vantage-api
+    ports:
+      - "8000:8000"
+    environment:
+      ENV: ${ENV}
+      PORT: ${PORT}
+
+      DB_URL: ${DB_URL}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_NAME: ${DB_NAME}
+      DB_SSLMODE: ${DB_SSLMODE}
+      DB_PASSWORD: ${DB_PASSWORD}
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - vantage-network
+    restart: unless-stopped
+    volumes:
+      - .:/app # optional for development (hot reload)
+
+volumes:
+  postgres_data:
+
+networks:
+  vantage-network:
+    driver: bridge
