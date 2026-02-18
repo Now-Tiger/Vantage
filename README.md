@@ -2,6 +2,8 @@
 
 AI-powered claim document processing service. Upload a PDF claim, and the system classifies each page and extracts structured data using a multi-agent LangGraph pipeline.
 
+![image](./docs/app-logs.png)
+
 ## How It Works
 
 ```
@@ -26,6 +28,8 @@ Agent    Agent     Bill Agent
 - **ID Agent** — patient name, DOB, ID numbers, policy details
 - **Discharge Summary Agent** — diagnosis, admit/discharge dates, physician info
 - **Itemized Bill Agent** — line items with costs, total amount
+
+![image](./docs/data-schema.png)
 
 ## Tech Stack
 
