@@ -14,9 +14,7 @@ WORKDIR /app
 COPY pyproject.toml uv.lock ./
 
 # Synchronize dependencies
-# Using --no-install-project ensures we only build the environment, not the local package code
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-dev --no-install-project
+RUN uv sync --frozen --no-dev --no-install-project
 
 # ---------- Stage 2: Runtime ----------
 FROM python:3.13-slim AS final
