@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from datetime import datetime
 from enum import Enum
 from typing import Any
 
@@ -78,3 +79,16 @@ class ProcessResponse(BaseModel):
     identity: IdentityInfo | None = None
     discharge_summary: DischargeSummaryInfo | None = None
     itemized_bill: ItemizedBillInfo | None = None
+
+
+class ClaimSummary(BaseModel):
+    claim_id: str
+    status: str
+    created_at: datetime
+
+
+class ClaimListResponse(BaseModel):
+    total: int
+    limit: int
+    offset: int
+    items: list[ClaimSummary]
