@@ -13,9 +13,9 @@ from functools import partial
 from fastapi import APIRouter, File, HTTPException, UploadFile
 
 from app.core.config import settings
-from app.db.repository import fetch_claim_result, save_claim_result
+from app.db.repository import fetch_all_claims, fetch_claim_result, save_claim_result
 from app.graph.workflow import pipeline
-from app.models.schema import ProcessResponse
+from app.models.schema import ClaimListResponse, ProcessResponse
 from app.services.pdf import extract_pages
 
 logger = logging.getLogger(__name__)
@@ -77,6 +77,13 @@ async def process_claim(file: UploadFile = File(...)) -> ProcessResponse:
         raise HTTPException(status_code=500, detail=f"Database error: {exc}") from exc
 
     return response
+
+
+@router.get("/claims", response_model=ClaimListResponse)
+async def list_claims(limit: int = 20, offset: int = 0) -> ClaimListResponse:
+    """List all processed claims (paginated)."""
+    items, total = await fetch_all_claims(limit=limit, offset=offset)
+    return ClaimListResponse(total=total, limit=limit, offset=offset, items=items)
 
 
 @router.get("/claims/{claim_id}", response_model=ProcessResponse)
